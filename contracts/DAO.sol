@@ -13,6 +13,8 @@ contract DAO {
     mapping(uint256 => Proposal)public proposals;
 
     event Propose(uint id, uint256 amount, address recipient, address creator);
+
+    event Vote(uint256 id, address investor);
     
     constructor(Token _token, uint256 _quorum){
         owner = msg.sender;
@@ -33,7 +35,7 @@ contract DAO {
     }
 
     modifier onlyInvestor() {
-        require (Token(token).balanceOf(msg.sender)>0 ,'Must be token holder');
+        require (token.balanceOf(msg.sender)>0 ,'Must be token holder');
         _;   
     }
     //Proposal to Fund Development
@@ -48,6 +50,26 @@ contract DAO {
 
         //Emit Event
         emit Propose( proposalCount, _amount, _recipient, msg.sender);
+
+    }
+
+    mapping(address => mapping(uint256 => bool))votes; //Nested Mapping to track user votes
+
+    function vote(uint256 _id) external onlyInvestor{
+        //Fetch Proposal from mapping by ID
+        Proposal storage proposal = proposals[_id];
+
+        //Dont let investor vote twice
+        require(!votes[msg.sender][_id], "Already voted");
+
+        //Update Votes
+        proposal.votes += token.balanceOf(msg.sender);
+
+        //Track that User has voted
+        votes[msg.sender][_id] = true;
+
+        //Emit An event 
+        emit Vote(_id, msg.sender);
 
     }
 

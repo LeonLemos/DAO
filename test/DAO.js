@@ -34,19 +34,19 @@ describe('DAO', () => {
     token = await Token.deploy('Dapp University', 'DAPP', '1000000')
 
     //Sends tokens to investora - each gets 20%
-    transaction = await token.connect(deployer).transfer(investor1.address, tokens(20000))
+    transaction = await token.connect(deployer).transfer(investor1.address, tokens(200000))
     await transaction.wait()
 
-    transaction = await token.connect(deployer).transfer(investor2.address, tokens(20000))
+    transaction = await token.connect(deployer).transfer(investor2.address, tokens(200000))
     await transaction.wait()
 
-    transaction = await token.connect(deployer).transfer(investor3.address, tokens(20000))
+    transaction = await token.connect(deployer).transfer(investor3.address, tokens(200000))
     await transaction.wait()
 
-    transaction = await token.connect(deployer).transfer(investor4.address, tokens(20000))
+    transaction = await token.connect(deployer).transfer(investor4.address, tokens(200000))
     await transaction.wait()
 
-    transaction = await token.connect(deployer).transfer(investor5.address, tokens(20000))
+    transaction = await token.connect(deployer).transfer(investor5.address, tokens(200000))
     await transaction.wait()
 
     //Deploy DAO and set QUORUM to > 50% of token supply, 500K + 1 wei, i.e., "500000000000000000000001"
@@ -98,9 +98,7 @@ describe('DAO', () => {
         it('Emits a propose Event', async()=>{
           await expect(transaction).to.emit(dao,'Propose').withArgs(1, ether(100), recipient.address, investor1.address)
         })
-
     })
-  })
 
     describe('Failure', async () => {
 
@@ -113,6 +111,51 @@ describe('DAO', () => {
       })
          
     })
+  })
+
+    
+
+  describe('Voting', () => {
+      let transaction, result
+
+      beforeEach(async()=>{
+        transaction = await dao.connect(investor1).createProposal('Proposal 1', ether(100), recipient.address)
+        result = await transaction.wait()
+    })
+  
+      describe('Success ', async () => {
+          beforeEach(async()=>{
+            transaction = await dao.connect(investor1).vote(1)
+            result = await transaction.wait()
+          })
+  
+          it('Updates Vote Count', async()=>{
+            const proposal = await dao.proposals(1)
+            expect(proposal.votes).to.equal(tokens(200000))
+          })
+
+          it('Emits a vote Event', async()=>{
+            await expect(transaction).to.emit(dao,'Vote').withArgs(1,investor1.address)
+          })
+      })
+
+      describe('Failure', async () => {
+  
+        it('Rejects non investors', async()=>{
+          await expect(dao.connect(user).vote(1)).to.be.reverted
+        })
+
+        it('Rejects double voting', async()=>{
+          transaction = await dao.connect(investor1).vote(1)
+          await transaction.wait()
+
+          await expect(dao.connect(investor1).vote(1)).to.be.reverted
+        })
+           
+      })
+  })
+  
+        
 
     
     
