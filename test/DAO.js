@@ -33,7 +33,7 @@ describe('DAO', () => {
     const Token = await ethers.getContractFactory('Token')
     token = await Token.deploy('Dapp University', 'DAPP', '1000000')
 
-    //Sends tokens to investora - each gets 20%
+    //Sends tokens to investors - each gets 20%
     transaction = await token.connect(deployer).transfer(investor1.address, tokens(200000))
     await transaction.wait()
 
