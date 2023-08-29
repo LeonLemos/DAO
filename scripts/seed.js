@@ -45,6 +45,8 @@ async function main() {
     transaction = await token.transfer(investor3.address, tokens(200000))
     await transaction.wait()
 
+    console.log(`Fetching dao...\n`)
+
     //Fetching deployed Dao
     const dao = await ethers.getContractAt('DAO', config[chainId].dao.address)
     console.log(`DAO Fetched : ${dao.address}\n`)
@@ -82,7 +84,7 @@ async function main() {
     console.log(`Creating one more Proposal...\n`)
 
     //Create one more proposal
-    transaction = await dao.connect(investor1).createProposal('Proposal 4', ether(100), recipient.address)
+    transaction = await dao.connect(investor1).createProposal(`Proposal 4`, ether(100), recipient.address)
     await transaction.wait()
 
     //Vote 1

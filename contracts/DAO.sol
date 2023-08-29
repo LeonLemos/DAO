@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 import "./Token.sol";
@@ -33,7 +33,6 @@ contract DAO {
         address payable recipient;
         uint256 votes;
         bool finalized;
-
     }
 
     modifier onlyInvestor() {
@@ -75,30 +74,28 @@ contract DAO {
     }
 
     function finalizeProposal(uint256 _id)external onlyInvestor{
-        //Fetch proposal from mapping by id
+        // Fetch proposal from mapping by id
         Proposal storage proposal = proposals[_id];
 
-        //Ensure proposal is not finalized
+        // Ensure proposal is not already finalized
         require(proposal.finalized == false, "proposal already finalized");
 
-        //Mark proposal sa finalized
+        // Mark proposal as finalized
         proposal.finalized = true;
 
-        //Check that proposal has enough votes
-        require(proposal.votes >= quorum, "must reach quorum");
+        // Check that proposal has enough votes
+        require(proposal.votes >= quorum, "must reach quorum to finalize proposal");
+
+        // Check that the contract has enough ether
+        require(address(this).balance >= proposal.amount);
 
         //Tranfer funds to recipient
         //* proposal.recipient.transfer(proposal.amount); *//Option1 less secure
 
-        (bool sent,) = proposal.recipient.call{value: proposal.amount}(""); //Option2 more secure
+        (bool sent, ) = proposal.recipient.call{value: proposal.amount}(""); //Option2 more secure
         require(sent);
 
-        //Check that contract has enough ether
-
-
-        //Emit Event
+        // Emit event
         emit Finalize(_id);
     }
-
-
 }
