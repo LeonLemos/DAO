@@ -31,6 +31,7 @@ contract DAO {
         string name;
         uint256 amount;
         address payable recipient;
+        string description;
         uint256 votes;
         bool finalized;
     }
@@ -40,14 +41,14 @@ contract DAO {
         _;   
     }
     //Proposal to Fund Development
-    function createProposal( string memory _name, uint256 _amount, address payable _recipient ) external onlyInvestor {
+    function createProposal( string memory _name, uint256 _amount, address payable _recipient, string memory _description ) external onlyInvestor {
 
         require (address(this).balance >= _amount);
 
         proposalCount++;
 
         //Create Proposal
-        proposals[proposalCount]= Proposal(proposalCount, _name, _amount, _recipient, 0, false);
+        proposals[proposalCount]= Proposal(proposalCount, _name, _amount, _recipient,_description, 0, false);
 
         //Emit Event
         emit Propose( proposalCount, _amount, _recipient, msg.sender);
@@ -65,6 +66,27 @@ contract DAO {
 
         //Update Votes
         proposal.votes += token.balanceOf(msg.sender);
+
+        //Track that User has voted
+        votes[msg.sender][_id] = true;
+
+        //Emit An event 
+        emit Vote(_id, msg.sender);
+    }
+
+    function voteDown(uint256 _id) external onlyInvestor{
+        //Fetch Proposal from mapping by ID
+        Proposal storage proposal = proposals[_id];
+
+        //Dont let investor vote twice
+        require(!votes[msg.sender][_id], "Already voted");
+
+        //Update Votes
+        unchecked {
+            proposal.votes -= token.balanceOf(msg.sender);    
+
+            require(proposal.votes >= token.balanceOf(msg.sender), "You don't have enough tokens to vote");
+        }
 
         //Track that User has voted
         votes[msg.sender][_id] = true;
