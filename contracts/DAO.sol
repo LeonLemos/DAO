@@ -85,7 +85,7 @@ contract DAO {
         unchecked {
             proposal.votes -= token.balanceOf(msg.sender);    
 
-            require(proposal.votes >= token.balanceOf(msg.sender), "You don't have enough tokens to vote");
+            require(proposal.votes >= token.balanceOf(msg.sender), "You don't have enough tokens to down vote");
         }
 
         //Track that User has voted
