@@ -15,6 +15,12 @@ import DAO_ABI from '../abis/DAO.json'
 // Config: Import your network config here
 import config from '../config.json';
 
+const tokens = (n) => {
+    return ethers.utils.parseUnits(n.toString(), 'ether')
+}
+  
+const ether = tokens
+
 function App() {
   const [account, setAccount] = useState(null)
   const [dao, setDao] = useState(null)
@@ -60,6 +66,10 @@ function App() {
     //Fetch quorum
     setQuorum(await dao.quorum()) 
 
+    let quorum = await dao.quorum()
+    quorum = ethers.utils.formatUnits(quorum,1)
+    setQuorum(quorum)
+  
     setIsLoading(false)
   }
 
@@ -86,10 +96,9 @@ function App() {
           />
           
           <hr/>
-
           <p className='text-center'><strong>Treasury Balance:</strong> {treasuryBalance} ETH </p>
-          
-          <hr/>
+          <p className='text-center'><strong>Quorum:</strong> {quorum} ETH </p>
+          <hr/>  
 
           <Proposals 
             provider={provider} 

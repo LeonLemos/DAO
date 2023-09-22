@@ -20,7 +20,7 @@ const Create = ({provider, dao, setIsLoading }) => {
             const signer = await provider.getSigner()
             const formattedAmount = ethers.utils.parseUnits(amount.toString(),'ether')
 
-            const transaction = await dao.connect(signer).createProposal(name, formattedAmount, address)
+            const transaction = await dao.connect(signer).createProposal(name, formattedAmount, address,"")
             await transaction.wait()
         }catch{
             window.alert('User rejected or transaction reverted')

@@ -2,7 +2,7 @@ import Navbar from 'react-bootstrap/Navbar';
 
 import logo from '../logo.png';
 
-const Navigation = ({ account }) => {
+const Navigation = ({ account,quorum }) => {
   return (
     <Navbar className='my-3'>
       <img

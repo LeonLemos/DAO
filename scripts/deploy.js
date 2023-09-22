@@ -6,6 +6,12 @@
 // global scope, and execute the script.
 const hre = require("hardhat");
 
+const tokens = (n) => {
+  return ethers.utils.parseUnits(n.toString(), 'ether')
+}
+
+const ether = tokens
+
 async function main() {
   const NAME = 'Dapp University'
   const SYMBOL = 'DAPP'
@@ -20,7 +26,7 @@ async function main() {
 
   // Deploy DAO
   const DAO = await hre.ethers.getContractFactory('DAO')
-  const dao = await DAO.deploy(token.address,'500000000000000000000001')
+  const dao = await DAO.deploy(token.address,'500000000000000000000001') // The 1 is the wei
   await dao.deployed()
 
   console.log(`DAO deployed to: ${dao.address}\n`)
