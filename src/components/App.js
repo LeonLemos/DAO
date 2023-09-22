@@ -23,6 +23,7 @@ const ether = tokens
 
 function App() {
   const [account, setAccount] = useState(null)
+  const [recipientBalance, setRecipientBalance] = useState(0)
   const [dao, setDao] = useState(null)
   const [treasuryBalance, setTreasuryBalance] = useState(0)
 
@@ -51,6 +52,14 @@ function App() {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
+
+    //Fetch Recipient accounts
+    const recipient = ethers.utils.getAddress(accounts[2])
+
+    //Fetching Recipient Balance
+    let recipientBalance = await provider.getBalance(recipient)
+    recipientBalance = ethers.utils.formatUnits(recipientBalance,18)
+    setRecipientBalance(recipientBalance)
 
     //Fetch proposal count
     const count = await dao.proposalCount()
@@ -98,6 +107,7 @@ function App() {
           <hr/>
           <p className='text-center'><strong>Treasury Balance:</strong> {treasuryBalance} ETH </p>
           <p className='text-center'><strong>Quorum:</strong> {quorum} ETH </p>
+          <p className='text-center'><strong>Recipient Balance:</strong> {recipientBalance} ETH </p>
           <hr/>  
 
           <Proposals 
