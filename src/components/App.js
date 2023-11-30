@@ -53,7 +53,7 @@ function App() {
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
 
-    //Fetch Recipient accounts
+    //Fetch Recipient account
     const recipient = ethers.utils.getAddress(accounts[2])
 
     //Fetching Recipient Balance
@@ -73,8 +73,6 @@ function App() {
     setProposals(items)
 
     //Fetch quorum
-    setQuorum(await dao.quorum()) 
-
     let quorum = await dao.quorum()
     quorum = ethers.utils.formatUnits(quorum,1)
     setQuorum(quorum)
